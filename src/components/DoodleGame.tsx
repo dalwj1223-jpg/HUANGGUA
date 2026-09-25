@@ -25,10 +25,6 @@ import {
   LifeBuoy,
   BookOpen,
   X,
-  Download,
-  FileCode,
-  Archive,
-  Check,
 } from 'lucide-react';
 import { QiandaoLogo } from './QiandaoLogo';
 
@@ -44,22 +40,9 @@ export const DoodleGame: React.FC = () => {
   const [isMuted, setIsMuted] = useState(() => sound.isMuted());
   const [hasStarted, setHasStarted] = useState(false);
   const [showRules, setShowRules] = useState(false);
-  const [showDownloadModal, setShowDownloadModal] = useState(false);
-  const [downloadToast, setDownloadToast] = useState<string | null>(null);
   const [shieldTimeLeft, setShieldTimeLeft] = useState<number | null>(null);
   const [ammo, setAmmo] = useState(200);
   const [comboCount, setComboCount] = useState<number>(0);
-
-  const triggerDownload = (url: string, filename: string) => {
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    setDownloadToast(`已触发下载：${filename}`);
-    setTimeout(() => setDownloadToast(null), 3500);
-  };
 
   // Input states
   const keysRef = useRef({ left: false, right: false });
@@ -381,19 +364,9 @@ export const DoodleGame: React.FC = () => {
             >
               {isMuted ? <VolumeX className="w-4 h-4 text-rose-400" /> : <Volume2 className="w-4 h-4 text-white" />}
             </button>
-            <button
-              id="top-download-btn"
-              onClick={() => {
-                if (hasStarted && !isPaused && !isGameOver) {
-                  setIsPaused(true);
-                }
-                setShowDownloadModal(true);
-              }}
-              className="w-9 h-9 rounded-full bg-slate-900/40 hover:bg-slate-900/55 text-white flex items-center justify-center shadow-md border border-white/30 backdrop-blur-md transition cursor-pointer active:scale-90"
-              title="下载脱机 HTML / 部署包"
-            >
-              <Download className="w-4 h-4 text-amber-300" />
-            </button>
+            <div className="w-9 h-9 rounded-full bg-slate-900/40 text-white flex items-center justify-center shadow-md border border-white/30 backdrop-blur-md font-bold tracking-widest text-xs">
+              •••
+            </div>
           </div>
         </div>
 
@@ -532,15 +505,6 @@ export const DoodleGame: React.FC = () => {
               >
                 <BookOpen className="w-3.5 h-3.5 text-amber-300" />
                 <span>夏日特色跳板 & 道具规则</span>
-              </button>
-
-              <button
-                id="download-offline-btn"
-                onClick={() => setShowDownloadModal(true)}
-                className="w-full py-2.5 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-amber-950 font-black text-xs rounded-xl border border-amber-200/80 shadow-md transition cursor-pointer flex items-center justify-center gap-1.5 active:scale-98"
-              >
-                <Download className="w-3.5 h-3.5" />
-                <span>⬇️ 下载本地离线版 index.html (脱机直接玩)</span>
               </button>
             </div>
           </div>
@@ -735,130 +699,6 @@ export const DoodleGame: React.FC = () => {
               <RotateCcw className="w-4 h-4" />
               <span>再玩一次 (SPACE)</span>
             </button>
-
-            {/* Download Offline Game Button */}
-            <button
-              onClick={() => setShowDownloadModal(true)}
-              className="mt-3 w-full max-w-[260px] py-2.5 bg-white/20 hover:bg-white/30 text-white font-bold rounded-xl border border-white/40 backdrop-blur-md transition flex items-center justify-center gap-1.5 text-xs cursor-pointer active:scale-95"
-            >
-              <Download className="w-3.5 h-3.5 text-amber-300" />
-              <span>⬇️ 下载本地离线单文件 (index.html)</span>
-            </button>
-          </div>
-        )}
-
-        {/* Download Modal Dialog */}
-        {showDownloadModal && (
-          <div className="absolute inset-0 z-50 flex items-center justify-center p-4 bg-sky-950/85 backdrop-blur-md animate-in fade-in duration-200">
-            <div className="w-full max-w-[340px] bg-white rounded-3xl p-5 shadow-2xl border-2 border-sky-100 flex flex-col text-left">
-              {/* Modal Header */}
-              <div className="flex items-center justify-between border-b border-sky-100 pb-2.5 mb-3">
-                <div className="flex items-center gap-2 text-sky-900 font-black text-sm">
-                  <Download className="w-4 h-4 text-amber-500" />
-                  <span>下载离线文件 & 部署包</span>
-                </div>
-                <button
-                  id="close-download-btn"
-                  onClick={() => setShowDownloadModal(false)}
-                  className="w-7 h-7 rounded-full bg-sky-100 hover:bg-sky-200 text-sky-800 flex items-center justify-center transition cursor-pointer active:scale-90"
-                  title="关闭"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-
-              <div className="space-y-3 max-h-[60vh] overflow-y-auto pr-1">
-                {/* Option 1: CodeX Full Project ZIP */}
-                <div className="bg-indigo-50/90 rounded-2xl p-3 border border-indigo-200 shadow-xs">
-                  <div className="flex items-center gap-1.5 font-black text-indigo-950 text-xs mb-1">
-                    <Archive className="w-4 h-4 text-indigo-600" />
-                    <span>CodeX 完整工程包 (codex_project.zip)</span>
-                    <span className="text-[10px] bg-indigo-600 text-white px-1.5 py-0.2 rounded-full font-bold">
-                      CodeX推荐
-                    </span>
-                  </div>
-                  <p className="text-[11px] text-indigo-800 leading-snug mb-2">
-                    包含完整 <strong>src/ 源码、package.json、Vite 配置与预编译产物</strong>，可直接解压导入 CodeX 部署或二次开发。
-                  </p>
-                  <button
-                    onClick={() => triggerDownload('./codex_project.zip', 'codex_project.zip')}
-                    className="w-full py-2 bg-gradient-to-r from-indigo-500 to-blue-600 hover:from-indigo-400 hover:to-blue-500 text-white font-black text-xs rounded-xl shadow-md transition flex items-center justify-center gap-1.5 cursor-pointer active:scale-95"
-                  >
-                    <Download className="w-3.5 h-3.5" />
-                    <span>下载 CodeX 完整工程包 (.zip)</span>
-                  </button>
-                </div>
-
-                {/* Option 2: Standalone Single File index.html */}
-                <div className="bg-sky-50 rounded-2xl p-3 border border-sky-200/80 shadow-xs">
-                  <div className="flex items-center gap-1.5 font-black text-sky-950 text-xs mb-1">
-                    <FileCode className="w-4 h-4 text-sky-600" />
-                    <span>脱机单文件 (index.html)</span>
-                    <span className="text-[10px] bg-emerald-500 text-white px-1.5 py-0.2 rounded-full font-bold">
-                      零依赖
-                    </span>
-                  </div>
-                  <p className="text-[11px] text-sky-700 leading-snug mb-2">
-                    约 600KB，无需网络，无需服务器。下载后<strong>直接双击</strong>即可在浏览器中畅玩，所有图形与音效 100% 完整！
-                  </p>
-                  <button
-                    onClick={() => triggerDownload('./offline_game.html', 'index.html')}
-                    className="w-full py-2 bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white font-black text-xs rounded-xl shadow-md transition flex items-center justify-center gap-1.5 cursor-pointer active:scale-95"
-                  >
-                    <Download className="w-3.5 h-3.5" />
-                    <span>一键下载脱机版 index.html</span>
-                  </button>
-                </div>
-
-                {/* Option 3: Full Dist ZIP package */}
-                <div className="bg-amber-50/80 rounded-2xl p-3 border border-amber-200 shadow-xs">
-                  <div className="flex items-center gap-1.5 font-black text-amber-950 text-xs mb-1">
-                    <Archive className="w-4 h-4 text-amber-600" />
-                    <span>静态上线发布包 (codex_static.zip / dist.zip)</span>
-                  </div>
-                  <p className="text-[11px] text-amber-800 leading-snug mb-2">
-                    纯静态文件，支持 GitHub Pages / Vercel / Netlify / CodeX 静态部署。
-                  </p>
-                  <div className="grid grid-cols-2 gap-2">
-                    <button
-                      onClick={() => triggerDownload('./codex_static.zip', 'codex_static.zip')}
-                      className="py-1.5 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-white font-bold text-[11px] rounded-xl shadow-xs transition flex items-center justify-center gap-1 cursor-pointer active:scale-95"
-                    >
-                      <Download className="w-3 h-3" />
-                      <span>codex_static.zip</span>
-                    </button>
-                    <button
-                      onClick={() => triggerDownload('./dist.zip', 'dist.zip')}
-                      className="py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-[11px] rounded-xl shadow-xs transition flex items-center justify-center gap-1 cursor-pointer active:scale-95"
-                    >
-                      <Download className="w-3 h-3" />
-                      <span>dist.zip</span>
-                    </button>
-                  </div>
-                </div>
-
-                {/* Direct Link Tip */}
-                <div className="text-[10px] text-slate-500 leading-tight bg-slate-50 p-2 rounded-xl border border-slate-200/80">
-                  💡 <strong>快捷链接:</strong> 也可在浏览器直接点击或右键另存：<br />
-                  <div className="flex flex-wrap gap-2 mt-1">
-                    <a href="./codex_project.zip" download="codex_project.zip" className="text-indigo-600 font-bold underline">
-                      ./codex_project.zip
-                    </a>
-                    <a href="./offline_game.html" download="index.html" className="text-sky-600 font-bold underline">
-                      ./offline_game.html
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Download toast notification */}
-        {downloadToast && (
-          <div className="absolute top-20 left-1/2 -translate-x-1/2 z-50 px-4 py-2 rounded-full bg-emerald-600 text-white font-bold text-xs shadow-xl flex items-center gap-1.5 animate-in fade-in slide-in-from-top-2">
-            <Check className="w-4 h-4 text-emerald-200" />
-            <span>{downloadToast}</span>
           </div>
         )}
       </div>

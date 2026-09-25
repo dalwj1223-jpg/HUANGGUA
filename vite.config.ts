@@ -5,23 +5,10 @@ import {defineConfig} from 'vite';
 
 export default defineConfig(() => {
   return {
-    base: './',
     plugins: [react(), tailwindcss()],
     resolve: {
       alias: {
         '@': path.resolve(__dirname, '.'),
-      },
-    },
-    build: {
-      outDir: 'dist',
-      assetsDir: '', // Flat single-level deployment: no assets/ subfolder
-      emptyOutDir: true,
-      rollupOptions: {
-        output: {
-          entryFileNames: '[name]-[hash].js',
-          chunkFileNames: '[name]-[hash].js',
-          assetFileNames: '[name]-[hash][extname]',
-        },
       },
     },
     server: {
